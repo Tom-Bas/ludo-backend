@@ -10,11 +10,11 @@ from jose import jwt
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta, timezone
 from typing import Dict
+import uuid
 
 # --- Gestor de Conexiones Online (WebSockets) ---
 class ConnectionManager:
     def __init__(self):
-        # { room_code: { username: websocket } }
         self.rooms: Dict[str, Dict[str, WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, room_code: str, username: str):
@@ -40,7 +40,9 @@ manager = ConnectionManager()
 # --- Configuración de JWT ---
 SECRET_KEY = "Admin123"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30 
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# --- Inicialización de Base de Datos ---
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LUDO Game Backend", version="1.0.0")
@@ -142,8 +144,6 @@ async def get_current_user(
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
-import uuid
-
 # --- Registro de Usuarios ---
 @app.post("/api/v1/users/register", status_code=201)
 async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
@@ -172,7 +172,7 @@ async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
     db.commit()
 
     # Simulamos el envío de email imprimiendo en consola
-    verify_link = f"http://localhost:8000/api/v1/users/verify/{token}"
+    verify_link = f"https://ludo-backend-oq9o.onrender.com/api/v1/users/verify/{token}"
     print("\n" + "="*50)
     print(f"📧 EMAIL DE VERIFICACIÓN PARA: {user_data.email}")
     print(f"🔗 ENLACE: {verify_link}")
@@ -290,4 +290,3 @@ async def create_level(level_data: LevelCreate, db: Session = Depends(get_db)):
 @app.get("/")
 def root():
     return {"message": "LUDO Game Backend API", "version": "1.0.0"}
-
