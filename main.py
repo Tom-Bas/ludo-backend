@@ -103,6 +103,15 @@ def get_db():
         db.close()
 
 
+# --- Reset DB (Debug) ---
+@app.get("/api/v1/debug/reset-all-data")
+def nuke_database():
+    """PELIGRO: Borra toda la base de datos y la recrea."""
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    return {"message": "♻️ Base de datos reiniciada. Todos los usuarios eliminados."}
+
+
 # --- Evento de Inicio ---
 @app.on_event("startup")
 def startup_event():
