@@ -40,7 +40,8 @@ manager = ConnectionManager()
 # --- Configuración de JWT ---
 SECRET_KEY = "Admin123"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 30 
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LUDO Game Backend", version="1.0.0")
 
@@ -289,3 +290,4 @@ async def create_level(level_data: LevelCreate, db: Session = Depends(get_db)):
 @app.get("/")
 def root():
     return {"message": "LUDO Game Backend API", "version": "1.0.0"}
+
